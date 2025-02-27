@@ -43,18 +43,19 @@ def main(repo_dir):
     editor_args = [] if "editor_args" not in config_keys else config_data["editor_args"]
     print(editor_path, editor_args)
 
-    # subprocess.call([editor_path, *editor_args, repo_dir])
+    subprocess.call([editor_path, *editor_args, repo_dir])
 
 
 def parse_args():
     args = sys.argv[1:]
-    args.append("Documents/GitHub/EditorPerRepo")
-    print(args)
+    print("args: ", args)
 
     if not len(args):
         return print("Error: No path to open was passed to this script!")
 
+    main(args[0])
+    # main(Path.home().joinpath(Path("Documents/GitHub/EditorPerRepo")))
+
 
 if __name__ == "__main__":
-    my_repo_path = Path.home().joinpath(Path("Documents/GitHub/EditorPerRepo"))
-    main(my_repo_path)
+    parse_args()

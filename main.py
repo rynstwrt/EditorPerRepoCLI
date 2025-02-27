@@ -4,6 +4,9 @@ import subprocess
 import yaml
 
 
+CONFIG_FILE_NAME = ".repo-editor"
+
+
 def read_config(config_path):
     with open(config_path) as stream:
         try:
@@ -21,20 +24,26 @@ def main(repo_dir):
         print("Error: Given repo directory does not exist!")
         return
 
-    editor_config_file = repo_dir.joinpath("repo-editor.yaml")
+    editor_config_file = repo_dir.joinpath(CONFIG_FILE_NAME)
     print(editor_config_file)
     if not editor_config_file.exists():
-        return print("Error: repo-editor.yaml file was not found in that repo!")
+        return print(f"Error: {CONFIG_FILE_NAME} file was not found in that repo!")
 
     config_data = read_config(editor_config_file)
     if not config_data:
         return print("Error: Config data could not be read!")
 
+    config_keys = config_data.keys()
+
+    if "editor_path" not in config_keys:
+        return print(f"Error: editor_path was not set in {CONFIG_FILE_NAME}!")
+
     editor_path = config_data["editor_path"]
-    editor_args = config_data["editor_args"]
+
+    editor_args = [] if "editor_args" not in config_keys else config_data["editor_args"]
     print(editor_path, editor_args)
 
-    subprocess.call([editor_path, *editor_args, repo_dir])
+    # subprocess.call([editor_path, *editor_args, repo_dir])
 
 
 def parse_args():

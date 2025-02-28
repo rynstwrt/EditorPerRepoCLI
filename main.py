@@ -6,9 +6,9 @@ import yaml
 
 CONFIG_FILE_NAME = ".repo-editor"
 
-CONFIG_EDITOR_KEY = "editor_path"
+CONFIG_EDITOR_PATH_KEY = "editor_path"
 CONFIG_EDITOR_ARGS_KEY = "editor_args"
-REQUIRED_CONFIG_KEYS = [CONFIG_EDITOR_KEY]
+REQUIRED_CONFIG_KEYS = [CONFIG_EDITOR_PATH_KEY]
 
 
 def read_config(config_path):
@@ -47,7 +47,7 @@ def main(repo_dir):
     if missing_config_keys:
         return print(f"Error: Required config keys {missing_config_keys} were not found!")
 
-    editor_path = config_data[CONFIG_EDITOR_KEY]
+    editor_path = config_data[CONFIG_EDITOR_PATH_KEY]
     editor_args = [] if CONFIG_EDITOR_ARGS_KEY not in config_keys else config_data[CONFIG_EDITOR_ARGS_KEY]
     print(editor_path, editor_args)
 

@@ -6,6 +6,10 @@ import yaml
 
 CONFIG_FILE_NAME = ".repo-editor"
 
+CONFIG_EDITOR_KEY = "editor_path"
+CONFIG_EDITOR_ARGS_KEY = "editor_args"
+REQUIRED_CONFIG_KEYS = [CONFIG_EDITOR_KEY]
+
 
 def read_config(config_path):
     with open(config_path) as stream:
@@ -35,27 +39,27 @@ def main(repo_dir):
 
     config_keys = config_data.keys()
 
-    if "editor_path" not in config_keys:
-        return print(f"Error: editor_path was not set in {CONFIG_FILE_NAME}!")
+    missing_config_keys = []
+    for key in REQUIRED_CONFIG_KEYS:
+        if key not in config_keys:
+            missing_config_keys.append(key)
 
-    editor_path = config_data["editor_path"]
+    if missing_config_keys:
+        return print(f"Error: Required config keys {missing_config_keys} were not found!")
 
-    editor_args = [] if "editor_args" not in config_keys else config_data["editor_args"]
+    editor_path = config_data[CONFIG_EDITOR_KEY]
+    editor_args = [] if CONFIG_EDITOR_ARGS_KEY not in config_keys else config_data[CONFIG_EDITOR_ARGS_KEY]
     print(editor_path, editor_args)
 
     subprocess.call([editor_path, *editor_args, repo_dir])
 
 
-def parse_args():
+if __name__ == "__main__":
     args = sys.argv[1:]
     print("args: ", args)
 
     if not len(args):
-        return print("Error: No path to open was passed to this script!")
-
-    main(args[0])
-    # main(Path.home().joinpath(Path("Documents/GitHub/EditorPerRepo")))
-
-
-if __name__ == "__main__":
-    parse_args()
+        print("Error: No path to open was passed to this script!")
+    else:
+        main(args[0])
+        # main(Path.home().joinpath(Path("Documents/GitHub/EditorPerRepo")))

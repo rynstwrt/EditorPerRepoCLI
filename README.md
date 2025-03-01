@@ -3,7 +3,7 @@
 
 **(WIP)**<br>It works though! Just making it nicer.
 
-[//]: # (<br>)
+<br>
 
 ## FEATURES:
 - Config to set what file types go to what editor.

@@ -1,7 +1,9 @@
 # EditorPerRepo
  Open a different editor per repo when opening a repo on GitHub Desktop!
 
-<br>
+**(WIP)**<br>It works though! Just making it nicer.
+
+[//]: # (<br>)
 
 ## FEATURES:
 - Config to set what file types go to what editor.

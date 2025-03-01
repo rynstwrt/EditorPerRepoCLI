@@ -2,19 +2,11 @@ from pathlib import Path
 from os.path import expandvars
 import sys
 import subprocess
-import tomllib
 import glob
+from config_manager import ConfigManager
 
 
-EDITOR_FILE_TYPE_CONFIG = "config.toml"
-
-
-def load_config(config_path):
-    try:
-        config_content = open(config_path, "rb")
-        return tomllib.load(config_content)
-    except (OSError, tomllib.TOMLDecodeError) as err:
-        return err
+CONFIG_LOCATION = "config.toml"
 
 
 def detect_editor_from_file_types(repo_dir, editor_table):
@@ -37,17 +29,14 @@ def detect_editor_from_file_types(repo_dir, editor_table):
 
 
 def get_repo_editor(repo_dir):
-    config_data = load_config(repo_dir.joinpath(EDITOR_FILE_TYPE_CONFIG))
+    config_load_result = config_manager.load_config(repo_dir.joinpath(CONFIG_LOCATION))
 
-    if isinstance(config_data, Exception):
+    if isinstance(config_load_result, Exception):
         print("Error: Config file could not be loaded!")
-        return print(config_data)
+        return print(config_load_result)
 
-    config_tables = config_data.keys()
-    editor_table = config_data["editors"] if "editors" in config_tables else None
-    miscellaneous_table = config_data["miscellaneous"] if "miscellaneous" in config_tables else None
-    default_editor = miscellaneous_table["default_editor"] if miscellaneous_table and "default_editor" in miscellaneous_table else None
-
+    editor_table = config_manager.get_editor_table()
+    default_editor = config_manager.get_default_editor()
     if not editor_table:
         return default_editor if default_editor else print("Error: No editor assignments made and no default editor is set!")
 
@@ -85,6 +74,7 @@ if __name__ == "__main__":
     args = sys.argv[1:]
 
     if len(args):
+        config_manager = ConfigManager()
         main(args[0])
     else:
         print("Error: No path to open was passed to this script!")

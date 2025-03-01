@@ -73,7 +73,7 @@ def main(repo_dir):
         return print(f'Error: Editor at "{given_editor_location}" could not be found!')
 
     print(f"Found executable path at {editor_path}!")
-    subprocess.call([editor_path, repo_dir])
+    subprocess.Popen([editor_path, repo_dir])
 
 
 if __name__ == "__main__":

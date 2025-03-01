@@ -1,8 +1,6 @@
 # EditorPerRepo
  Open a different editor per repo when opening a repo on GitHub Desktop!
 
-**(WIP)**<br>It works though! Just making it nicer.
-
 <br>
 
 ## FEATURES:
@@ -15,9 +13,10 @@
 
 ## SETUP:
 1. In GitHub Desktop: File > Options > Integrations > Configure custom editor...
-2. Set the path to a python executable.
-3. Set the arguments to the path to the downloaded repo's `main.py` file with a space and `%TARGET_PATH%` after it.
-    - Ex: `%HOME%\Documents\GitHub\EditorPerRepo\main.py %TARGET_PATH%`
+2. Set the path to a **pythonw** executable.
+   - Running with `pythonw.exe` instead of `python.exe` prevents showing a console window.
+3. Set the arguments to the path to the downloaded repo's `main.pyw` file with a space and `%TARGET_PATH%` after it.
+   - Ex: `%HOME%\Documents\GitHub\EditorPerRepo\main.pyw %TARGET_PATH%`
 4. That's it!
 
 <br>
@@ -37,7 +36,7 @@
 # Editors to use for repos containing these file types.
 # If multiple of these file types are present, it will use the most prevalent one.
 [editors]
-".py" = "C:/Program Files/JetBrains/*/*/webstorm64.exe"
+".py" = "C:/Program Files/JetBrains/*/*/pycharm64.exe"
 ".js" = "C:/Program Files/JetBrains/*/*/webstorm64.exe"
 
 

@@ -7,6 +7,7 @@ from config_manager import ConfigManager
 
 
 CONFIG_LOCATION = "config.toml"
+FORCED_EDITOR_FILE_NAME = ".repo-editor"
 
 
 def detect_editor_from_file_types(repo_dir, editor_table):
@@ -29,6 +30,11 @@ def detect_editor_from_file_types(repo_dir, editor_table):
 
 
 def get_repo_editor(repo_dir):
+    forced_editor = config_manager.get_forced_editor_from_file(repo_dir, FORCED_EDITOR_FILE_NAME)
+    if forced_editor:
+        print(f'Found {FORCED_EDITOR_FILE_NAME} file with path to "{forced_editor}"!')
+        return forced_editor
+
     config_load_result = config_manager.load_config(repo_dir.joinpath(CONFIG_LOCATION))
 
     if isinstance(config_load_result, Exception):
@@ -67,7 +73,7 @@ def main(repo_dir):
         return print(f'Error: Editor at "{given_editor_location}" could not be found!')
 
     print(f"Found executable path at {editor_path}!")
-    # subprocess.call([editor_path, repo_dir])
+    subprocess.call([editor_path, repo_dir])
 
 
 if __name__ == "__main__":

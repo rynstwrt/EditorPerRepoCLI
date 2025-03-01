@@ -1,7 +1,7 @@
 # Editors to use for repos containing these file types.
 # If multiple of these file types are present, it will use the most prevalent one.
-# TODO: You can also force a repo to use a given editor by creating a file named ".repo-editor"
-# TODO: in the root of the repo with one line containing the editor's path.
+# You can also force a repo to use a given editor by creating a file named ".repo-editor"
+# in the root of the repo with one line containing the editor's path.
 [editors]
 ".py" = "C:/Program Files/JetBrains/*/*/webstorm64.exe"
 ".js" = "C:/Program Files/JetBrains/*/*/webstorm64.exe"

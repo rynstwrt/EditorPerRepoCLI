@@ -1,29 +1,42 @@
 from pathlib import Path
 import sys
 import subprocess
-import json
+import tomllib
+import glob
 
 
-EDITOR_FILE_TYPE_CONFIG = "./editor-file-types.json"
+EDITOR_FILE_TYPE_CONFIG = "config.toml"
 
 
-def attempt_file_read(file_path):
+def load_config(config_path):
     try:
-        return open(file_path, "r")
-    except OSError as err:
+        config_content = open(config_path, "rb")
+        return tomllib.load(config_content)
+    except (OSError, tomllib.TOMLDecodeError) as err:
         return err
 
 
 def detect_editor_from_file_types(repo_dir):
-    file_content = attempt_file_read(repo_dir.joinpath(EDITOR_FILE_TYPE_CONFIG))
+    config_data = load_config(repo_dir.joinpath(EDITOR_FILE_TYPE_CONFIG))
+    print(config_data)
 
-    if isinstance(file_content, Exception):
-        print("Error: Editor config file could not be read!")
-        return print(file_content)
+    if isinstance(config_data, Exception):
+        print("Error: Config file could not be loaded!")
+        return print(config_data)
 
-    data = json.load(file_content)
+    config_tables = config_data.keys()
+    editor_table = config_data["editors"] if "editors" in config_tables else None
+    miscellaneous_table = config_data["miscellaneous"] if "miscellaneous" in config_tables else None
+    print(editor_table)
+    print(miscellaneous_table)
 
-    extensions = data.keys()
+    default_editor = miscellaneous_table["default_editor"] if miscellaneous_table and "default_editor" in miscellaneous_table else None
+    print(default_editor)
+
+    if not editor_table and not default_editor:
+        return print("Error: No editor assignments made and no default editor is set!")
+
+    extensions = editor_table.keys()
     most_common_file_type = None
     for extension in extensions:
         files_of_type = repo_dir.glob(f"*{extension}")
@@ -32,38 +45,35 @@ def detect_editor_from_file_types(repo_dir):
             most_common_file_type = (extension, num_files)
 
     if not most_common_file_type:
-        return print("Error: No file types with an associated editor were found!")
+        return default_editor
+        # return print("Error: No file types with an associated editor were found!")
 
     file_type, num_files = most_common_file_type
     print(f"Most common file extension is {file_type} with {num_files} files found.")
 
-    editor_info = data[file_type]
-    print(editor_info)
-
-    parent_dir = editor_info["parentDir"]
-    exec_name = editor_info["executableName"]
-    print(parent_dir, exec_name)
-
-    parent_dir_path = Path(parent_dir)
-    exec_path = list(parent_dir_path.glob(f"**/{exec_name}"))
-    print(f"Found executable path at {exec_path}!")
-
-    return exec_path
+    return editor_table[file_type]
 
 
 def main(repo_dir):
     repo_dir = Path(repo_dir)
-    print(f"Repo dir: {repo_dir}")
 
     if not repo_dir.exists():
         print("Error: Given repo directory does not exist!")
         return
 
-    detected_editor = detect_editor_from_file_types(repo_dir)
-    if not detected_editor:
-        return
+    given_editor_location = detect_editor_from_file_types(repo_dir)
+    if not given_editor_location:
+        return print("Error: No valid editor locations could be found!")
 
-    subprocess.call([detected_editor[0], repo_dir])
+    editor_path_search_results = glob.glob(given_editor_location, recursive=True)
+    editor_path = editor_path_search_results[0] if editor_path_search_results else None
+
+    if not editor_path:
+        return print(f'Error: Editor at "{given_editor_location}" could not be found!')
+        # return print(f'Error: Assigned editor for {file_type} files "{config_editor_location}" could not be found!')
+
+    print(f"Found executable path at {editor_path}!")
+    subprocess.call([editor_path, repo_dir])
 
 
 if __name__ == "__main__":

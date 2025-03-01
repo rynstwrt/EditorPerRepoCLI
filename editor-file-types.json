@@ -1,9 +1,9 @@
 {
-    ".py": {
+    ".pyf": {
         "parentDir": "C:\\Program Files\\JetBrains",
         "executableName": "pycharm64.exe"
     },
-    ".js": {
+    ".jsf": {
         "parentDir": "C:\\Program Files\\JetBrains",
         "executableName": "webstorm64.exe"
     }

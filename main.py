@@ -7,19 +7,32 @@ import json
 EDITOR_FILE_TYPE_CONFIG = "./editor-file-types.json"
 
 
+def attempt_file_read(file_path):
+    try:
+        return open(file_path, "r")
+    except OSError as err:
+        return err
+
+
 def detect_editor_from_file_types(repo_dir):
-    file_content = open(repo_dir.joinpath(EDITOR_FILE_TYPE_CONFIG), "r")
+    file_content = attempt_file_read(repo_dir.joinpath(EDITOR_FILE_TYPE_CONFIG))
+
+    if isinstance(file_content, Exception):
+        print("Error: Editor config file could not be read!")
+        return print(file_content)
 
     data = json.load(file_content)
-    print(data)
 
     extensions = data.keys()
     most_common_file_type = None
     for extension in extensions:
         files_of_type = repo_dir.glob(f"*{extension}")
         num_files = len(list(files_of_type))
-        if not most_common_file_type or most_common_file_type[1] < num_files:
+        if num_files and (not most_common_file_type or most_common_file_type[1] < num_files):
             most_common_file_type = (extension, num_files)
+
+    if not most_common_file_type:
+        return print("Error: No file types with an associated editor were found!")
 
     file_type, num_files = most_common_file_type
     print(f"Most common file extension is {file_type} with {num_files} files found.")
@@ -47,17 +60,16 @@ def main(repo_dir):
         return
 
     detected_editor = detect_editor_from_file_types(repo_dir)
-    print(detected_editor)
+    if not detected_editor:
+        return
 
     subprocess.call([detected_editor[0], repo_dir])
 
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    print("args: ", args)
 
-    if not len(args):
-        print("Error: No path to open was passed to this script!")
-    else:
+    if len(args):
         main(args[0])
-        # main(Path.home().joinpath(Path("Documents/GitHub/EditorPerRepo")))
+    else:
+        print("Error: No path to open was passed to this script!")

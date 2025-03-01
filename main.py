@@ -17,9 +17,27 @@ def load_config(config_path):
         return err
 
 
-def detect_editor_from_file_types(repo_dir):
+def detect_editor_from_file_types(repo_dir, editor_table):
+    file_extensions = editor_table.keys()
+
+    most_common_file_type = None
+    for extension in file_extensions:
+        files_of_type = repo_dir.glob(f"*{extension}")
+        num_files = len(list(files_of_type))
+        if num_files and (not most_common_file_type or most_common_file_type[1] < num_files):
+            most_common_file_type = (extension, num_files)
+
+    if not most_common_file_type:
+        return
+
+    file_type, num_files = most_common_file_type
+    print(f"Most common file extension is {file_type} with {num_files} files found.")
+
+    return editor_table[file_type]
+
+
+def get_repo_editor(repo_dir):
     config_data = load_config(repo_dir.joinpath(EDITOR_FILE_TYPE_CONFIG))
-    print(config_data)
 
     if isinstance(config_data, Exception):
         print("Error: Config file could not be loaded!")
@@ -30,24 +48,14 @@ def detect_editor_from_file_types(repo_dir):
     miscellaneous_table = config_data["miscellaneous"] if "miscellaneous" in config_tables else None
     default_editor = miscellaneous_table["default_editor"] if miscellaneous_table and "default_editor" in miscellaneous_table else None
 
-    if not editor_table and not default_editor:
-        return print("Error: No editor assignments made and no default editor is set!")
+    if not editor_table:
+        return default_editor if default_editor else print("Error: No editor assignments made and no default editor is set!")
 
-    extensions = editor_table.keys()
-    most_common_file_type = None
-    for extension in extensions:
-        files_of_type = repo_dir.glob(f"*{extension}")
-        num_files = len(list(files_of_type))
-        if num_files and (not most_common_file_type or most_common_file_type[1] < num_files):
-            most_common_file_type = (extension, num_files)
-
-    if not most_common_file_type:
+    detected_editor = detect_editor_from_file_types(repo_dir, editor_table)
+    if not detected_editor:
         return default_editor
 
-    file_type, num_files = most_common_file_type
-    print(f"Most common file extension is {file_type} with {num_files} files found.")
-
-    return editor_table[file_type]
+    return detected_editor
 
 
 def main(repo_dir):
@@ -57,7 +65,7 @@ def main(repo_dir):
         print("Error: Given repo directory does not exist!")
         return
 
-    given_editor_location = detect_editor_from_file_types(repo_dir)
+    given_editor_location = get_repo_editor(repo_dir)
     if not given_editor_location:
         return print("Error: No valid editor locations could be found!")
 
@@ -70,7 +78,7 @@ def main(repo_dir):
         return print(f'Error: Editor at "{given_editor_location}" could not be found!')
 
     print(f"Found executable path at {editor_path}!")
-    subprocess.call([editor_path, repo_dir])
+    # subprocess.call([editor_path, repo_dir])
 
 
 if __name__ == "__main__":

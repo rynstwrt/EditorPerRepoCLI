@@ -1,16 +1,15 @@
-from operator import itemgetter
 from pathlib import Path
 import sys
-import glob
 import subprocess
 import json
 
 
-EDITOR_FILE_TYPE_CONFIG = "editor-file-types.json"
+EDITOR_FILE_TYPE_CONFIG = "./editor-file-types.json"
 
 
 def detect_editor_from_file_types(repo_dir):
-    file_content = open(EDITOR_FILE_TYPE_CONFIG, "r")
+    file_content = open(repo_dir.joinpath(EDITOR_FILE_TYPE_CONFIG), "r")
+
     data = json.load(file_content)
     print(data)
 

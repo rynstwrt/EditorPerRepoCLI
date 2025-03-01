@@ -1,6 +1,7 @@
 #-----------------------------------------------------------------------------------------
 # Set which editors to use based on the kinds of files present in each repository.
 # Environment variables such as %LocalAppData% are supported.
+# Glob patterns are also supported.
 
 # You can also force a repo to use a given editor by creating a file named ".repo-editor"
 # in the root of the repo with one line containing the editor's path.

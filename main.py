@@ -1,9 +1,9 @@
 from pathlib import Path
 from os.path import expandvars
+from config_manager import ConfigManager
 import sys
 import subprocess
 import glob
-from config_manager import ConfigManager
 
 
 CONFIG_LOCATION = "config.toml"

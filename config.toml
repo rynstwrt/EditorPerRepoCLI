@@ -9,4 +9,5 @@
 
 # Other options
 [miscellaneous]
-default_editor = "code"  # The default editor to use when none of the above match.
+# The default editor to use when none of the above match.
+default_editor = "%LocalAppData%/Programs/Microsoft VS Code/bin/code.cmd"

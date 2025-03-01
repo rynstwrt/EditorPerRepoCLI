@@ -1,4 +1,5 @@
 from pathlib import Path
+from os.path import expandvars
 import sys
 import subprocess
 import tomllib
@@ -27,11 +28,7 @@ def detect_editor_from_file_types(repo_dir):
     config_tables = config_data.keys()
     editor_table = config_data["editors"] if "editors" in config_tables else None
     miscellaneous_table = config_data["miscellaneous"] if "miscellaneous" in config_tables else None
-    print(editor_table)
-    print(miscellaneous_table)
-
     default_editor = miscellaneous_table["default_editor"] if miscellaneous_table and "default_editor" in miscellaneous_table else None
-    print(default_editor)
 
     if not editor_table and not default_editor:
         return print("Error: No editor assignments made and no default editor is set!")
@@ -46,7 +43,6 @@ def detect_editor_from_file_types(repo_dir):
 
     if not most_common_file_type:
         return default_editor
-        # return print("Error: No file types with an associated editor were found!")
 
     file_type, num_files = most_common_file_type
     print(f"Most common file extension is {file_type} with {num_files} files found.")
@@ -65,12 +61,13 @@ def main(repo_dir):
     if not given_editor_location:
         return print("Error: No valid editor locations could be found!")
 
+    given_editor_location = expandvars(given_editor_location)
+
     editor_path_search_results = glob.glob(given_editor_location, recursive=True)
     editor_path = editor_path_search_results[0] if editor_path_search_results else None
 
     if not editor_path:
         return print(f'Error: Editor at "{given_editor_location}" could not be found!')
-        # return print(f'Error: Assigned editor for {file_type} files "{config_editor_location}" could not be found!')
 
     print(f"Found executable path at {editor_path}!")
     subprocess.call([editor_path, repo_dir])

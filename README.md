@@ -1,6 +1,8 @@
 # EditorPerRepo
  Open a different editor per repo when opening a repo on GitHub Desktop!
 
+**Usage:** `./main.pyw [-h] [--config config_path] [--nolaunch] <target_dir>`
+
 <br>
 
 ## FEATURES:

@@ -20,10 +20,11 @@ def detect_editor_from_file_types(repo_dir, editor_entries):
 
         extensions, editor_path = entry["extensions"], entry["editor"]
 
-        extension_search_results = [list(repo_dir.glob(f"*{extension}")) for extension in extensions]
+        extension_search_results = [list(repo_dir.glob(f"**/*{extension}")) for extension in extensions]
 
         files_of_types = reduce(lambda a, b: a + b, extension_search_results)
         if files_of_types:
+            print(files_of_types)
             num_files_of_types = len(files_of_types)
             if not most_common_file_type or num_files_of_types > most_common_file_type[0]:
                 most_common_file_type = (num_files_of_types, entry)
@@ -38,8 +39,7 @@ def get_repo_editor(repo_dir):
         print(f'Found {FORCED_EDITOR_FILE_NAME} file with path to "{forced_editor}"!')
         return forced_editor
 
-    # TODO: make work with non-relative paths
-    config_load_result = config_manager.load_config(repo_dir.joinpath(config_path))
+    config_load_result = config_manager.load_config(Path(__file__).parent.joinpath(config_path).resolve())
     if isinstance(config_load_result, Exception):
         print("[ERROR] Config file could not be loaded!")
         return print(config_load_result)

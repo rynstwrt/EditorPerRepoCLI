@@ -63,6 +63,9 @@ class ConfigManager:
             self.__remove_invalid_and_duplicate_entries(self.editor_entries)
 
             default_editors = [entry for entry in self.editor_entries if "default" in entry and entry["default"] is True]
+            if not default_editors:
+                return
+
             if len(default_editors) > 1:
                 print("[WARNING] There is more than one default editor defined! The first defined will be used.")
                 print("Listed default editors:")

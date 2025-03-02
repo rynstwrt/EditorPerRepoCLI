@@ -14,6 +14,9 @@ FORCED_EDITOR_FILE_NAME = ".repo-editor"
 def detect_editor_from_file_types(repo_dir, editor_entries):
     most_common_file_type = None
     for entry in editor_entries:
+        if "default" in entry and "extensions" not in entry:
+            continue
+
         extensions, editor_path = entry["extensions"], entry["editor"]
 
         extension_search_results = [list(repo_dir.glob(f"*{extension}")) for extension in extensions]
@@ -36,13 +39,13 @@ def get_repo_editor(repo_dir):
 
     config_load_result = config_manager.load_config(repo_dir.joinpath(CONFIG_LOCATION))
     if isinstance(config_load_result, Exception):
-        print("Error: Config file could not be loaded!")
+        print("[ERROR] Config file could not be loaded!")
         return print(config_load_result)
 
     editor_entries = config_manager.get_editor_entries()
     default_editor = config_manager.get_default_editor()
     if not editor_entries:
-        return default_editor if default_editor else print("Error: No editor assignments made and no default editor is set!")
+        return default_editor if default_editor else print("[ERROR] No editor assignments made and no default editor is set!")
 
     return detect_editor_from_file_types(repo_dir, editor_entries) or default_editor
 
@@ -51,12 +54,12 @@ def main(repo_dir):
     repo_dir = Path(repo_dir)
 
     if not repo_dir.exists():
-        print("Error: Given repo directory does not exist!")
+        print("[ERROR] Given repo directory does not exist!")
         return
 
     given_editor_location = get_repo_editor(repo_dir)
     if not given_editor_location:
-        return print("Error: No valid editor locations could be found!")
+        return print("[ERROR] No valid editor locations could be found!")
 
     given_editor_location = expandvars(given_editor_location)
 
@@ -64,7 +67,7 @@ def main(repo_dir):
     editor_path = editor_path_search_results[0] if editor_path_search_results else None
 
     if not editor_path:
-        return print(f'Error: Editor at "{given_editor_location}" could not be found!')
+        return print(f'[ERROR] Editor at "{given_editor_location}" could not be found!')
 
     print(f"Found executable path at {editor_path}!")
     subprocess.Popen([editor_path, repo_dir])
@@ -77,4 +80,4 @@ if __name__ == "__main__":
         config_manager = ConfigManager()
         main(args[0])
     else:
-        print("Error: No path to open was passed to this script!")
+        print("[ERROR] No path to open was passed to this script!")

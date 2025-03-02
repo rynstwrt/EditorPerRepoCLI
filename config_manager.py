@@ -1,5 +1,6 @@
 from pathlib import Path
 import tomllib
+from xml.etree.ElementInclude import default_loader
 
 
 class ConfigManager:
@@ -32,12 +33,12 @@ class ConfigManager:
 
         if duplicate_entries:
             duplicate_entries.sort()
-            print(f"Warning: duplicates found in config editor entries!")
+            print(f"[WARNING] duplicates found in config editor entries!")
             [print(f'\t- Duplicate entry "{entry[1]}" for entry #{entry[0] + 1}') for entry in duplicate_entries]
 
         invalid_editor_entries = [entry for entry in editor_entries if not self.__editor_entry_is_valid(entry)]
         if invalid_editor_entries:
-            print(f"Warning: Invalid entries found in config editor entries!")
+            print(f"[WARNING] Invalid entries found in config editor entries!")
             for entry in invalid_editor_entries:
                 print(f'\t- {entry} (INVALID)')
                 editor_entries.remove(entry)
@@ -54,14 +55,20 @@ class ConfigManager:
 
             self.editor_entries = config_data["editors"] if "editors" in config_data else None
             if not self.editor_entries:
-                return SyntaxError(f'Error: Section "editors" not found in {config_file_name}!')
+                return SyntaxError(f'[ERROR] Section "editors" not found in {config_file_name}!')
 
             self.__remove_invalid_and_duplicate_entries(self.editor_entries)
 
             default_editors = [entry for entry in self.editor_entries if "default" in entry and entry["default"] is True]
-            if default_editors and "editor" in default_editors[0]:
-                self.default_editor = default_editors[0]["editor"]
-                self.editor_entries.remove(default_editors[0])
+            if len(default_editors) > 1:
+                print("[WARNING] There is more than one default editor defined! The first defined will be used.")
+                print("Listed default editors:")
+                [print(f'\t{"*" if not i else "-"} {given_default_editor}') for i, given_default_editor in enumerate(default_editors)]
+
+            default_editor = default_editors[0]
+            if default_editors and "editor" in default_editor:
+                self.default_editor = default_editor["editor"]
+                # self.editor_entries.remove(default_editors[0])
         except tomllib.TOMLDecodeError as err:
             return err
 

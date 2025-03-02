@@ -24,7 +24,6 @@ def detect_editor_from_file_types(repo_dir, editor_entries):
 
         files_of_types = reduce(lambda a, b: a + b, extension_search_results)
         if files_of_types:
-            print(files_of_types)
             num_files_of_types = len(files_of_types)
             if not most_common_file_type or num_files_of_types > most_common_file_type[0]:
                 most_common_file_type = (num_files_of_types, entry)

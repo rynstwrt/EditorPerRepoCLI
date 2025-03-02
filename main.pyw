@@ -1,3 +1,4 @@
+from functools import reduce
 from pathlib import Path
 from os.path import expandvars
 from config_manager import ConfigManager
@@ -6,27 +7,25 @@ import subprocess
 import glob
 
 
-CONFIG_LOCATION = "config.toml"
+CONFIG_LOCATION = "./config.toml"
 FORCED_EDITOR_FILE_NAME = ".repo-editor"
 
 
-def detect_editor_from_file_types(repo_dir, editor_table):
-    file_extensions = editor_table.keys()
-
+def detect_editor_from_file_types(repo_dir, editor_entries):
     most_common_file_type = None
-    for extension in file_extensions:
-        files_of_type = repo_dir.glob(f"*{extension}")
-        num_files = len(list(files_of_type))
-        if num_files and (not most_common_file_type or most_common_file_type[1] < num_files):
-            most_common_file_type = (extension, num_files)
+    for entry in editor_entries:
+        extensions, editor_path = entry["extensions"], entry["editor"]
 
-    if not most_common_file_type:
-        return
+        extension_search_results = [list(repo_dir.glob(f"*{extension}")) for extension in extensions]
 
-    file_type, num_files = most_common_file_type
-    print(f"Most common file extension is {file_type} with {num_files} files found.")
+        files_of_types = reduce(lambda a, b: a + b, extension_search_results)
+        if files_of_types:
+            num_files_of_types = len(files_of_types)
+            if not most_common_file_type or num_files_of_types > most_common_file_type[0]:
+                most_common_file_type = (num_files_of_types, entry)
 
-    return editor_table[file_type]
+    if most_common_file_type:
+        return most_common_file_type[1]["editor"]
 
 
 def get_repo_editor(repo_dir):
@@ -36,21 +35,16 @@ def get_repo_editor(repo_dir):
         return forced_editor
 
     config_load_result = config_manager.load_config(repo_dir.joinpath(CONFIG_LOCATION))
-
     if isinstance(config_load_result, Exception):
         print("Error: Config file could not be loaded!")
         return print(config_load_result)
 
-    editor_table = config_manager.get_editor_table()
+    editor_entries = config_manager.get_editor_entries()
     default_editor = config_manager.get_default_editor()
-    if not editor_table:
+    if not editor_entries:
         return default_editor if default_editor else print("Error: No editor assignments made and no default editor is set!")
 
-    detected_editor = detect_editor_from_file_types(repo_dir, editor_table)
-    if not detected_editor:
-        return default_editor
-
-    return detected_editor
+    return detect_editor_from_file_types(repo_dir, editor_entries) or default_editor
 
 
 def main(repo_dir):

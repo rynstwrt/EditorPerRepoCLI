@@ -20,7 +20,8 @@ class ConfigManager:
     def __editor_entry_is_valid(entry):
         has_extensions_or_default = "extensions" in entry or ("default" in entry and entry["default"] is True)
         has_editor = "editor" in entry
-        return has_extensions_or_default and has_editor
+        invalid_reasons = [has_extensions_or_default, has_editor]
+        return {"valid": False not in invalid_reasons, "entry": entry, "reasons": invalid_reasons}
 
 
     def __remove_invalid_and_duplicate_entries(self, editor_entries):
@@ -35,12 +36,15 @@ class ConfigManager:
             print(f"[WARNING] duplicates found in config editor entries!")
             [print(f'\t- Duplicate entry "{entry[1]}" for entry #{entry[0] + 1}') for entry in duplicate_entries]
 
-        invalid_editor_entries = [entry for entry in editor_entries if not self.__editor_entry_is_valid(entry)]
+        invalid_editor_entries = [self.__editor_entry_is_valid(entry) for entry in editor_entries]
+        invalid_editor_entries = list(filter(lambda invalid_entry: not invalid_entry["valid"], invalid_editor_entries))
+
         if invalid_editor_entries:
             print(f"[WARNING] Invalid entries found in config editor entries!")
-            for entry in invalid_editor_entries:
-                print(f'\t- {entry} (INVALID)')
-                editor_entries.remove(entry)
+            for entry_invalid_check_return in invalid_editor_entries:
+                entry_needs = [v for i, v in enumerate(["extensions (and/or) default", "editor"]) if not entry_invalid_check_return["reasons"][i]]
+                print(f'\t- "{entry_invalid_check_return["entry"]}" -- Missing entry key(s): {entry_needs}')
+                editor_entries.remove(entry_invalid_check_return["entry"])
 
 
     def load_config(self, config_path: Path):

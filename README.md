@@ -1,8 +1,6 @@
 # EditorPerRepo
  Open a different editor per repo when opening a repo on GitHub Desktop!
 
-**Usage:** `./main.pyw [-h] [--config config_path] [--nolaunch] <target_dir>`
-
 <br>
 
 ## FEATURES:
@@ -21,6 +19,10 @@
    - Ex: `%HOME%\Documents\GitHub\EditorPerRepo\main.pyw %TARGET_PATH%`
 4. Set up your favorite editors in the `config.toml` file.
 5. That's it!
+
+<br>
+
+**CLI Usage:** `./main.pyw [-h] [--config config_path] [--nolaunch] <target_dir>`
 
 <br>
 

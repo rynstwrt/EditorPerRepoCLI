@@ -50,6 +50,7 @@ editor = "C:/Program Files/JetBrains/*/*/webstorm64.exe"
 
 [[editors]]
 default = true
+#extensions = [".cpp", ".c", ".h"]  # Optional when the default key is set.
 editor = "%LocalAppData%/Programs/Microsoft VS Code/Code.exe"
 
 

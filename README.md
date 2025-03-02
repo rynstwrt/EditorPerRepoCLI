@@ -17,7 +17,8 @@
    - Running with `pythonw.exe` instead of `python.exe` prevents showing a console window.
 3. Set the arguments to the path to the downloaded repo's `main.pyw` file with a space and `%TARGET_PATH%` after it.
    - Ex: `%HOME%\Documents\GitHub\EditorPerRepo\main.pyw %TARGET_PATH%`
-4. That's it!
+4. Set up your favorite editors in the `config.toml` file.
+5. That's it!
 
 <br>
 
@@ -35,12 +36,23 @@
 
 # Editors to use for repos containing these file types.
 # If multiple of these file types are present, it will use the most prevalent one.
-[editors]
-".py" = "C:/Program Files/JetBrains/*/*/pycharm64.exe"
-".js" = "C:/Program Files/JetBrains/*/*/webstorm64.exe"
+[[editors]]
+extensions = [".py", ".pyw"]
+editor = "C:/Program Files/JetBrains/*/*/pycharm64.exe"
+
+[[editors]]
+extensions = [".js", ".css", ".html"]
+editor = "C:/Program Files/JetBrains/*/*/webstorm64.exe"
+
+[[editors]]
+default = true
+editor = "%LocalAppData%/Programs/Microsoft VS Code/Code.exe"
 
 
-# The default editor to use when none of the above match.
-[miscellaneous]
-default_editor = "%LocalAppData%/Programs/Microsoft VS Code/bin/code.cmd"
+# NOTE: You can also format the config like this!
+#editors = [
+#    { extensions = [".py", ".pyw"], editor = "C:/Program Files/JetBrains/*/*/pycharm64.exe" },
+#    { extensions = [".js", ".css", ".html"], editor = "C:/Program Files/JetBrains/*/*/webstorm64.exe" },
+#    { default = true, editor = "%LocalAppData%/Programs/Microsoft VS Code/Code.cmd" },
+#]
 ```

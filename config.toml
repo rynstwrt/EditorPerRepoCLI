@@ -23,8 +23,9 @@ default = true
 editor = "%LocalAppData%/Programs/Microsoft VS Code/Code.exe"
 
 
+# NOTE: You can also format the config like this!
 #editors = [
 #    { extensions = [".py", ".pyw"], editor = "C:/Program Files/JetBrains/*/*/pycharm64.exe" },
 #    { extensions = [".js", ".css", ".html"], editor = "C:/Program Files/JetBrains/*/*/webstorm64.exe" },
-#    { default = true, editor = "%LocalAppData%/Programs/Microsoft VS Code/bin/code.cmd" },
+#    { default = true, editor = "%LocalAppData%/Programs/Microsoft VS Code/Code.cmd" },
 #]

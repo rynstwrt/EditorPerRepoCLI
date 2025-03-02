@@ -2,12 +2,13 @@ from functools import reduce
 from pathlib import Path
 from os.path import expandvars
 from config_manager import ConfigManager
+from importlib.util import find_spec
 import sys
 import subprocess
 import glob
 
 
-CONFIG_LOCATION = "./config.toml"
+CONFIG_PATH = "./config.toml"
 FORCED_EDITOR_FILE_NAME = ".repo-editor"
 
 
@@ -37,7 +38,8 @@ def get_repo_editor(repo_dir):
         print(f'Found {FORCED_EDITOR_FILE_NAME} file with path to "{forced_editor}"!')
         return forced_editor
 
-    config_load_result = config_manager.load_config(repo_dir.joinpath(CONFIG_LOCATION))
+    # TODO:
+    config_load_result = config_manager.load_config(repo_dir.joinpath(CONFIG_PATH))
     if isinstance(config_load_result, Exception):
         print("[ERROR] Config file could not be loaded!")
         return print(config_load_result)
@@ -70,10 +72,19 @@ def main(repo_dir):
         return print(f'[ERROR] Editor at "{given_editor_location}" could not be found!')
 
     print(f"Found executable path at {editor_path}!")
-    subprocess.Popen([editor_path, repo_dir])
+
+    if not dev_util or dev_util.RUN_EDITOR_WHEN_FOUND:
+        subprocess.Popen([editor_path, repo_dir])
 
 
 if __name__ == "__main__":
+    dev_util = None
+    if find_spec("util.dev_util"):
+        from util.dev_util import DevUtil
+        print("Loaded dev_util")
+        dev_util = DevUtil()
+        CONFIG_PATH = dev_util.CONFIG_PATH
+
     args = sys.argv[1:]
 
     if len(args):

@@ -1,6 +1,5 @@
 from pathlib import Path
 import tomllib
-from xml.etree.ElementInclude import default_loader
 
 
 class ConfigManager:
@@ -68,7 +67,6 @@ class ConfigManager:
             default_editor = default_editors[0]
             if default_editors and "editor" in default_editor:
                 self.default_editor = default_editor["editor"]
-                # self.editor_entries.remove(default_editors[0])
         except tomllib.TOMLDecodeError as err:
             return err
 
